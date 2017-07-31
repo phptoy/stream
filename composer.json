@@ -1,0 +1,25 @@
+{
+    "name": "phptoy/stream",
+    "type": "library",
+    "description": "php7 ByteStream",
+    "keywords": [
+        "php7",
+        "byte",
+        "stream"
+    ],
+    "authors": [
+        {
+            "name": "cjj",
+            "email": "rusty.sun@qq.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "phptoy\\stream\\": "src/stream"
+        }
+    },
+    "require": {
+        "php": ">=7.1"
+    }
+}
