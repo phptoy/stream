@@ -1,9 +1,9 @@
 <?php
-namespace phptoy\stream\util;
+namespace phptoy\stream;
 /**
  * Class IntUtil
  *
- * @package phptoy\stream\util
+ * @package phptoy\stream
  */
 final class IntUtil {
     const SIGNED=0;//signed

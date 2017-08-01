@@ -16,7 +16,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "phptoy\\stream\\": "src/stream"
+            "phptoy\\stream\\": "src/"
         }
     },
     "require": {
