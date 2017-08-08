@@ -54,7 +54,7 @@ class ByteStream {
     }
 
     /**
-     * read
+     * read $len byte
      *
      * @param int $len
      *
@@ -62,6 +62,20 @@ class ByteStream {
      */
     public function read(int $len) : string {
         return $this->readBytes($len);
+    }
+
+    /**
+     * read $len int
+     *
+     * @param int $len
+     * @param int $signType
+     *
+     * @return int
+     */
+    public function readInt(int $len, int $signType=IntUtil::UNSIGNED) : int {
+        $str=$this->readBytes($len);
+        $bits=$len * 8;
+        return IntUtil::unpack($str, $bits, $signType);
     }
 
     public function reset() : void {
