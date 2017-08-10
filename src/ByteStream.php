@@ -12,19 +12,19 @@ class ByteStream {
     /**
      * @var string $buf
      */
-    private $buf;
+    protected $buf;
     /**
      * @var int $size
      */
-    private $size;
+    protected $size;
     /**
      * @var int $pos
      */
-    private $pos;
+    protected $pos;
     /**
      * @var int $mark
      */
-    private $mark;
+    protected $mark;
 
     /**
      * ByteArray constructor.
