@@ -1,5 +1,8 @@
 <?php
 namespace phptoy\stream;
+
+use SplFixedArray;
+
 /**
  * Class ByteArray
  *
@@ -36,10 +39,17 @@ class ByteStream {
     }
 
     /**
+     * @return int
+     */
+    public function getPosition() : int {
+        return $this->pos;
+    }
+
+    /**
      * @return bool
      */
-    public function isEnd() : bool {
-        return ($this->pos === $this->size);
+    public function hasRemaining():bool{
+        return ($this->size>$this->pos);
     }
 
     /**
@@ -52,6 +62,7 @@ class ByteStream {
     public function mark() : void {
         $this->mark=$this->pos;
     }
+
 
     /**
      * read $len byte
@@ -73,9 +84,18 @@ class ByteStream {
      * @return int
      */
     public function readInt(int $len, int $signType=IntUtil::UNSIGNED) : int {
-        $str=$this->readBytes($len);
+        $bin=$this->readBytes($len);
         $bits=$len * 8;
-        return IntUtil::unpack($str, $bits, $signType);
+        return IntUtil::unpack($bin, $bits, $signType);
+    }
+
+    /**
+     * @param int $len
+     *
+     * @return string
+     */
+    public function readString(int $len) : string {
+        return $this->readBytes($len);
     }
 
     public function reset() : void {
@@ -96,18 +116,32 @@ class ByteStream {
     }
 
     /**
+     * @param bool $isFixed
+     *
+     * @return array|SplFixedArray
+     */
+    public function toArray($isFixed=false) {
+        $bin=substr($this->buf, $this->pos);
+        $result=unpack('C*', $bin);
+        if (!$isFixed) {
+            return $result;
+        }
+        return SplFixedArray::fromArray($result);
+    }
+
+    /**
      * @param int $len
      *
      * @return string
      */
     private function readBytes(int $len=1) : string {
         $count=$this->pos + $len;
-        $buf='';
+        $bin='';
         if ($count > $this->size - 1) {
-            return $buf;
+            return $bin;
         }
-        $buf=substr($this->buf, $this->pos, $len);
+        $bin=substr($this->buf, $this->pos, $len);
         $this->pos+=$len;
-        return $buf;
+        return $bin;
     }
 }
