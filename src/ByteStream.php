@@ -6,7 +6,7 @@ use SplFixedArray;
 /**
  * Class ByteStream
  *
- * @package mobar\stream
+ * @package phptoy\stream
  */
 class ByteStream {
     /**
