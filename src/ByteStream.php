@@ -4,7 +4,7 @@ namespace phptoy\stream;
 use SplFixedArray;
 
 /**
- * Class ByteArray
+ * Class ByteStream
  *
  * @package mobar\stream
  */
@@ -12,19 +12,19 @@ class ByteStream {
     /**
      * @var string $buf
      */
-    protected $buf;
+    private $buf;
     /**
      * @var int $size
      */
-    protected $size;
+    private $size;
     /**
      * @var int $pos
      */
-    protected $pos;
+    private $pos;
     /**
      * @var int $mark
      */
-    protected $mark;
+    private $mark;
 
     /**
      * ByteArray constructor.
@@ -39,17 +39,10 @@ class ByteStream {
     }
 
     /**
-     * @return int
-     */
-    public function getPosition() : int {
-        return $this->pos;
-    }
-
-    /**
      * @return bool
      */
-    public function hasRemaining():bool{
-        return ($this->size>$this->pos);
+    public function hasRemaining() : bool {
+        return ($this->size > $this->pos);
     }
 
     /**
@@ -63,16 +56,42 @@ class ByteStream {
         $this->mark=$this->pos;
     }
 
+    public function resetMark() : void {
+        $this->pos=$this->mark;
+        $this->mark=0;
+    }
 
     /**
-     * read $len byte
+     * @return int
+     */
+    public function position() : int {
+        return $this->pos;
+    }
+
+    /**
+     * read a byte
      *
+     * @return int
+     */
+    public function read() : int {
+        $bin=$this->_readStringByLength(1);
+        if (!$bin) {
+            return -1;
+        }
+        return IntUtil::unpack($bin, 8, IntUtil::UNSIGNED);
+    }
+
+    /**
      * @param int $len
      *
-     * @return string
+     * @return SplFixedArray
      */
-    public function read(int $len) : string {
-        return $this->readBytes($len);
+    public function readBytes(int $len) : SplFixedArray {
+        $str=$this->readString($len);
+        if (!$str) {
+            return new SplFixedArray(0);
+        }
+        return SplFixedArray::fromArray(unpack('C*', $str)[1]);
     }
 
     /**
@@ -84,23 +103,44 @@ class ByteStream {
      * @return int
      */
     public function readInt(int $len, int $signType=IntUtil::UNSIGNED) : int {
-        $bin=$this->readBytes($len);
+        $bin=$this->_readStringByLength($len);
+        if (!$bin) {
+            return -1;
+        }
         $bits=$len * 8;
         return IntUtil::unpack($bin, $bits, $signType);
     }
 
     /**
+     * @return int
+     */
+    public function readInteger() : int {
+        return $this->readInt(4);
+    }
+
+    /**
+     * @return int
+     */
+    public function readLong() : int {
+        return $this->readInt(8);
+    }
+
+    /**
+     * @return int
+     */
+    public function readShort() : int {
+        return $this->readInt(2);
+    }
+
+    /**
+     * read $len byte
+     *
      * @param int $len
      *
      * @return string
      */
     public function readString(int $len) : string {
-        return $this->readBytes($len);
-    }
-
-    public function reset() : void {
-        $this->pos=$this->mark;
-        $this->mark=0;
+        return $this->_readStringByLength($len);
     }
 
     /**
@@ -134,7 +174,7 @@ class ByteStream {
      *
      * @return string
      */
-    private function readBytes(int $len=1) : string {
+    private function _readStringByLength(int $len=1) : string {
         $count=$this->pos + $len;
         $bin='';
         if ($count > $this->size - 1) {
