@@ -27,11 +27,11 @@ class ByteStream {
     private $mark;
 
     /**
-     * ByteArray constructor.
+     * ByteStream constructor.
      *
      * @param string $data
      */
-    public function __construct(string $data) {
+    public function __construct(string $data='') {
         $this->buf=$data;
         $this->size=strlen($data);
         $this->pos=0;
@@ -161,13 +161,83 @@ class ByteStream {
      * @return array|SplFixedArray
      */
     public function toArray($isFixed=false) {
-        $bin=substr($this->buf, $this->pos);
-        $result=unpack('C*', $bin);
+        $str=substr($this->buf, $this->pos);
+        $result=ByteUtil::toArray($str);
         if (!$isFixed) {
             return $result;
         }
         return SplFixedArray::fromArray($result);
     }
+
+    //--- write buffer begin
+
+    /**
+     * @param int $value
+     *
+     * @return int
+     */
+    public function writeByte(int $value) : int {
+        return $this->writeInt($value & 0xff, 1);
+    }
+
+    /**
+     * @param int $value
+     * @param int $len
+     * @param int $signType
+     *
+     * @return int
+     */
+    public function writeInt(int $value, int $len=1, int $signType=IntUtil::UNSIGNED) : int {
+        $bits=$len * 8;
+        $str=IntUtil::pack($value, $bits, $signType);
+        return $this->writeString($str);
+    }
+
+    /**
+     * @param int $value
+     *
+     * @return int
+     */
+    public function writeInteger(int $value) : int {
+        return $this->writeInt($value, 4);
+    }
+
+    /**
+     * @param int $value
+     *
+     * @return int
+     */
+    public function writeShort(int $value) : int {
+        return $this->writeInt($value, 2);
+    }
+
+    /**
+     * @param int $value
+     *
+     * @return int
+     */
+    public function writeLong(int $value) : int {
+        return $this->writeInt($value, 8);
+    }
+
+    /**
+     * write bytes
+     *
+     * @param string $str
+     *
+     * @return int
+     */
+    public function writeString(?string $str) : int {
+        $len=strlen($str);
+        if (!$str || !$len) {
+            return -1;
+        }
+        $this->buf.=$str;
+        $this->size+=$len;
+        $this->pos+=$len;
+        return $this->length();
+    }
+    //--- write buffer end
 
     /**
      * @param int $len
