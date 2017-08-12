@@ -195,29 +195,32 @@ class ByteStream {
 
     /**
      * @param int $value
+     * @param int $signType
      *
      * @return int
      */
-    public function writeInteger(int $value) : int {
-        return $this->writeInt($value, 4);
+    public function writeInteger(int $value, int $signType=IntUtil::UNSIGNED) : int {
+        return $this->writeInt($value, 4,$signType);
     }
 
     /**
      * @param int $value
+     * @param int $signType
      *
      * @return int
      */
-    public function writeShort(int $value) : int {
-        return $this->writeInt($value, 2);
+    public function writeShort(int $value, int $signType=IntUtil::UNSIGNED) : int {
+        return $this->writeInt($value, 2,$signType);
     }
 
     /**
      * @param int $value
+     * @param int $signType
      *
      * @return int
      */
-    public function writeLong(int $value) : int {
-        return $this->writeInt($value, 8);
+    public function writeLong(int $value, int $signType=IntUtil::UNSIGNED) : int {
+        return $this->writeInt($value, 8, $signType);
     }
 
     /**
